@@ -1,8 +1,5 @@
-streamlit
+gradio
 pymupdf
-python-docx
+docx2txt
 sentence-transformers
 scikit-learn
-torch
-transformers
-
