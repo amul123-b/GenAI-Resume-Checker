@@ -3,11 +3,9 @@ import fitz  # PyMuPDF
 from docx import Document
 from sentence_transformers import SentenceTransformer, util
 
-# Load sentence transformer model (will auto-download)
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
 def extract_text(file):
-    """Extract text from PDF or DOCX"""
     text = ""
     if file.name.endswith(".pdf"):
         doc = fitz.open(file.name)
@@ -21,14 +19,12 @@ def extract_text(file):
 
 def check_resume(resume_file, jd_text):
     resume_text = extract_text(resume_file)
-    # Simple semantic similarity using embeddings
     embeddings_resume = model.encode(resume_text, convert_to_tensor=True)
     embeddings_jd = model.encode(jd_text, convert_to_tensor=True)
     score = util.cos_sim(embeddings_resume, embeddings_jd).item() * 100
     verdict = "High suitability" if score > 70 else "Medium suitability" if score > 40 else "Low suitability"
     return f"Relevance Score: {score:.2f}/100\nVerdict: {verdict}"
 
-# Gradio interface
 iface = gr.Interface(
     fn=check_resume,
     inputs=[gr.File(label="Upload Resume (PDF/DOCX)"), gr.Textbox(label="Paste Job Description")],
